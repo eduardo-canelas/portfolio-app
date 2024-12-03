@@ -1,32 +1,45 @@
-import React from 'react';
-import Header from './Header';
-import './App.css'; // Import your styles
+import React, { useEffect } from 'react';
+import './App.css';
 
-function App() {
+const App = () => {
+  useEffect(() => {
+    const scrollContainer = document.querySelector('.scroll-container');
+    
+    const handleWheel = (e) => {
+      if (e.deltaY !== 0) {
+        scrollContainer.scrollBy({
+          left: e.deltaY > 0 ? window.innerWidth : -window.innerWidth,
+          behavior: 'smooth',
+        });
+        e.preventDefault();
+      }
+    };
+
+    scrollContainer.addEventListener('wheel', handleWheel);
+
+    return () => {
+      scrollContainer.removeEventListener('wheel', handleWheel);
+    };
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
+    <div className="scroll-container">
+      <section className="section" style={{ backgroundColor: '#ff6347' }}>
         <h1>Welcome to My Portfolio</h1>
-        <p>This is a simple portfolio built with React!</p>
-      </header>
-      <main>
-        <section>
-          <h2>About Me</h2>
-          <p>I'm Eduardo, a passionate web developer.</p>
-        </section>
-        <section>
-          <h2>Projects</h2>
-          <ul>
-            <li>Project 1</li>
-            <li>Project 2</li>
-            <li>Project 3</li>
-          </ul>
-        </section>
-        <section>
-          <h2>Contact</h2>
-          <p>Feel free to reach out via email or social media!</p>
-        </section>
-      </main>
+        <p>Scroll to explore</p>
+      </section>
+      <section className="section" style={{ backgroundColor: '#4682b4' }}>
+        <h2>About Me</h2>
+        <p>This is where you can introduce yourself.</p>
+      </section>
+      <section className="section" style={{ backgroundColor: '#32cd32' }}>
+        <h2>Projects</h2>
+        <p>Here are some of my awesome projects.</p>
+      </section>
+      <section className="section" style={{ backgroundColor: '#ff1493' }}>
+        <h2>Contact</h2>
+        <p>Feel free to reach out!</p>
+      </section>
     </div>
   );
 }

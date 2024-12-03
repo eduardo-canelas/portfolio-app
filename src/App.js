@@ -25,16 +25,18 @@ const App = () => {
   return (
     <div className="scroll-container">
       <section className="section" style={{ backgroundColor: '#ff6347' }}>
-        <h1>Welcome to My Portfolio</h1>
+        <h1>Eduardo Canelas</h1>
         <p>Scroll to explore</p>
       </section>
       <section className="section" style={{ backgroundColor: '#4682b4' }}>
         <h2>About Me</h2>
-        <p>This is where you can introduce yourself.</p>
+        <p>Ya wilker Digamos</p>
       </section>
       <section className="section" style={{ backgroundColor: '#32cd32' }}>
         <h2>Projects</h2>
-        <p>Here are some of my awesome projects.</p>
+              <p>L Digamos.</p>
+              <p>G Digamos</p>
+              <p>W Digamos</p>
       </section>
       <section className="section" style={{ backgroundColor: '#ff1493' }}>
         <h2>Contact</h2>

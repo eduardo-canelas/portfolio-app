@@ -1,66 +1,58 @@
-import React, { useEffect } from 'react';
-import * as THREE from 'three';
+import React, { useEffect, useRef } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { OrbitControls } from '@react-three/drei';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import './App.css';
+
+gsap.registerPlugin(ScrollTrigger);
+
+const Cube = () => {
+  const mesh = useRef();
+  useFrame(() => {
+    if (mesh.current) {
+      mesh.current.rotation.x += 0.01;
+      mesh.current.rotation.y += 0.01;
+    }
+  });
+
+  return (
+    <mesh ref={mesh} position={[0, 0, 0]}>
+      <boxGeometry args={[1, 1, 1]} />
+      <meshStandardMaterial color="#00ff00" />
+    </mesh>
+  );
+};
 
 const App = () => {
   useEffect(() => {
-    // Set up the Three.js scene
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
-
-    // Add a simple geometry (e.g., a cube)
-    const geometry = new THREE.BoxGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    const cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
-
-    camera.position.z = 5;
-
-    // Animation loop
-    const animate = function () {
-      requestAnimationFrame(animate);
-      cube.rotation.x += 0.01;
-      cube.rotation.y += 0.01;
-      renderer.render(scene, camera);
-    };
-
-    animate();
-
-    // Clean up on component unmount
-    return () => {
-      document.body.removeChild(renderer.domElement);
-    };
-  }, []);
-
-  useEffect(() => {
-    const scrollContainer = document.querySelector('.scroll-container');
-    
-    const handleWheel = (e) => {
-      if (e.deltaY !== 0) {
-        scrollContainer.scrollBy({
-          left: e.deltaY > 0 ? window.innerWidth : -window.innerWidth,
-          behavior: 'smooth',
-        });
-        e.preventDefault();
-      }
-    };
-
-    scrollContainer.addEventListener('wheel', handleWheel);
-
-    return () => {
-      scrollContainer.removeEventListener('wheel', handleWheel);
-    };
+    gsap.utils.toArray('.section').forEach((section) => {
+      gsap.from(section, {
+        opacity: 0,
+        y: 50,
+        duration: 1,
+        scrollTrigger: {
+          trigger: section,
+          start: 'top 80%',
+          toggleActions: 'play none none reverse',
+        },
+      });
+    });
   }, []);
 
   return (
     <div className="scroll-container">
-      <section className="section" style={{ backgroundColor: '#ff6347' }}>
+      <section className="section hero" style={{ backgroundColor: '#ff6347' }}>
         <h1>Eduardo Canelas</h1>
         <p>Scroll to explore</p>
+        <div className="canvas-wrapper">
+          <Canvas camera={{ position: [0, 0, 5] }}>
+            <ambientLight intensity={0.5} />
+            <pointLight position={[10, 10, 10]} />
+            <Cube />
+            <OrbitControls />
+          </Canvas>
+        </div>
       </section>
       <section className="section" style={{ backgroundColor: '#4682b4' }}>
         <h2>About Me</h2>
@@ -78,6 +70,5 @@ const App = () => {
       </section>
     </div>
   );
-}
-
+};
 export default App;

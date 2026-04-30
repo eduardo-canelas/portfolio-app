@@ -1068,6 +1068,13 @@ svg {
     top: 10px;
     width: calc(100% - 20px);
     grid-template-columns: 1fr auto;
+    padding: 8px 8px 8px 18px;
+  }
+
+  .header-cta {
+    min-height: 40px;
+    padding: 0 18px;
+    font-size: 0.9rem;
   }
 
   .site-header nav {
@@ -1083,34 +1090,36 @@ svg {
 
   .hero-section {
     grid-template-columns: 1fr;
-    gap: 22px;
-    padding: 110px 16px 70px;
+    gap: 40px;
+    padding-top: 100px;
+    padding-bottom: 60px;
   }
 
-  .hero-section::after {
-    height: 72px;
+  .hero-identity {
+    min-height: auto;
   }
 
-  .hero-copy {
-    width: 100%;
-    max-width: none;
+  .hero-photo {
+    min-height: 320px;
   }
 
   .hero-copy h1 {
-    font-size: 2.4rem;
-    line-height: 0.94;
+    font-size: 2.2rem;
+    line-height: 1.1;
   }
 
   .hero-summary {
-    font-size: 1.02rem;
+    font-size: 1rem;
+    line-height: 1.5;
   }
 
   .proof-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 
   .project-console {
-    max-width: calc(100vw - 32px);
+    max-width: 100%;
     min-height: auto;
     overflow: hidden;
   }
@@ -1118,7 +1127,7 @@ svg {
   .console-head {
     align-items: flex-start;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
   }
 
   .console-head strong {
@@ -1126,33 +1135,38 @@ svg {
   }
 
   .radar-stage {
-    height: 280px;
+    height: 240px;
   }
 
   .section-band,
   .contact-band {
-    padding-right: 16px;
-    padding-left: 16px;
+    padding-right: 20px;
+    padding-left: 20px;
+    padding-top: 80px;
+    padding-bottom: 80px;
   }
 
   .section-heading {
-    gap: 14px;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 32px;
   }
 
   .section-heading h2,
   .contact-panel h2 {
-    font-size: 2rem;
-    line-height: 1.05;
+    font-size: 1.85rem;
+    line-height: 1.1;
   }
 
   .project-inspector h3,
   .console-readout h2 {
-    font-size: 1.6rem;
-    line-height: 1.1;
+    font-size: 1.5rem;
+    line-height: 1.2;
   }
 
   .project-row {
-    grid-template-columns: 42px minmax(0, 1fr);
+    grid-template-columns: 48px minmax(0, 1fr);
+    padding: 16px;
   }
 
   .project-row small {
@@ -1161,20 +1175,22 @@ svg {
 
   .project-inspector {
     min-height: auto;
-    padding: 22px;
+    padding: 24px;
   }
 
   .repo-strip,
   .contact-meta {
     grid-template-columns: 1fr;
+    gap: 20px;
   }
 
   .timeline-item {
-    padding: 22px;
+    padding: 24px;
   }
 
   .stack-matrix {
     grid-template-columns: 1fr;
+    gap: 32px;
   }
 
   .stack-group:nth-child(2) {

@@ -12,6 +12,9 @@
   --accent-ink: #000000;
   --radius: 16px;
   --shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-blur: blur(24px) saturate(180%);
 }
 
 * {
@@ -259,12 +262,12 @@ svg {
   display: inline-flex;
   flex-direction: column;
   gap: 12px;
-  background: rgba(242, 242, 247, 0.03);
-  border: 1px solid rgba(242, 242, 247, 0.08);
-  padding: 16px 24px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  padding: 14px 20px;
   border-radius: 16px;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   margin-bottom: 24px;
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease;
   cursor: default;
@@ -413,14 +416,14 @@ svg {
 }
 
 .proof-grid div {
-  min-height: 108px;
-  padding: 16px;
+  min-height: auto;
+  padding: 14px;
   min-width: 0;
-  border: 0.5px solid var(--line-dark);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius);
-  background: rgba(28, 28, 30, 0.4);
-  -webkit-backdrop-filter: blur(12px) saturate(180%);
-  backdrop-filter: blur(12px) saturate(180%);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
 }
 
 .proof-grid strong {
@@ -1090,111 +1093,70 @@ svg {
 
   .hero-section {
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: 32px;
     padding-top: 100px;
     padding-bottom: 60px;
   }
 
-  .hero-identity {
-    min-height: auto;
+  .graduation-countdown {
+    padding: 10px 14px;
+    align-self: flex-start;
   }
 
-  .hero-photo {
-    min-height: 320px;
+  .countdown-timer {
+    gap: 12px;
+  }
+
+  .time-val {
+    font-size: 1.5rem;
   }
 
   .hero-copy h1 {
-    font-size: 2.2rem;
+    font-size: 2.1rem;
     line-height: 1.1;
   }
 
-  .hero-summary {
-    font-size: 1rem;
-    line-height: 1.5;
-  }
-
   .proof-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .project-console {
-    max-width: 100%;
-    min-height: auto;
-    overflow: hidden;
-  }
-
-  .console-head {
-    align-items: flex-start;
-    flex-direction: column;
+    grid-template-columns: 1fr 1fr;
     gap: 8px;
   }
 
-  .console-head strong {
-    text-align: left;
+  .proof-grid strong {
+    font-size: 2rem;
   }
 
-  .radar-stage {
-    height: 240px;
+  .proof-grid span {
+    margin-top: 6px;
+    font-size: 0.72rem;
   }
 
   .section-band,
   .contact-band {
     padding-right: 20px;
     padding-left: 20px;
-    padding-top: 80px;
-    padding-bottom: 80px;
-  }
-
-  .section-heading {
-    grid-template-columns: 1fr;
-    gap: 12px;
-    margin-bottom: 32px;
+    padding-top: 60px;
+    padding-bottom: 60px;
   }
 
   .section-heading h2,
   .contact-panel h2 {
-    font-size: 1.85rem;
-    line-height: 1.1;
-  }
-
-  .project-inspector h3,
-  .console-readout h2 {
-    font-size: 1.5rem;
-    line-height: 1.2;
+    font-size: 1.7rem;
   }
 
   .project-row {
-    grid-template-columns: 48px minmax(0, 1fr);
-    padding: 16px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    margin-bottom: 8px;
   }
 
-  .project-row small {
-    grid-column: 2;
-  }
-
-  .project-inspector {
-    min-height: auto;
-    padding: 24px;
-  }
-
-  .repo-strip,
-  .contact-meta {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
-  .timeline-item {
-    padding: 24px;
-  }
-
-  .stack-matrix {
-    grid-template-columns: 1fr;
-    gap: 32px;
-  }
-
-  .stack-group:nth-child(2) {
-    grid-row: auto;
+  .timeline-item,
+  .stack-group {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-radius: 16px;
   }
 }
 

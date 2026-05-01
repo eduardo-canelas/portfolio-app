@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@gsap/react": "^2.1.1",
+    "@phosphor-icons/react": "^2.1.10",
     "@react-three/drei": "^9.119.0",
     "@react-three/fiber": "^8.17.10",
     "@testing-library/jest-dom": "^5.17.0",

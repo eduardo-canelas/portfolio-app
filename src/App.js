@@ -1,4 +1,18 @@
-import React, { useMemo, useRef, useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  ArrowRight,
+  Briefcase,
+  CheckCircle,
+  DownloadSimple,
+  GithubLogo,
+  LinkedinLogo,
+  Moon,
+  PaperPlaneTilt,
+  Rows,
+  Sparkle,
+  Sun,
+  X,
+} from '@phosphor-icons/react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
@@ -8,8 +22,8 @@ gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 const profile = {
   name: 'Eduardo Canelas Eterovic',
+  shortName: 'Eduardo Canelas',
   role: 'Junior Software Engineer',
-  focus: 'Full-stack product engineering, AI workflows, data modeling, and shipping impactful software.',
   location: 'Orlando, FL',
   email: 'edu.canelas.e@gmail.com',
   phone: '(689) 220-9515',
@@ -20,24 +34,28 @@ const profile = {
 };
 
 const navItems = [
-  ['Proof', '#proof'],
-  ['Projects', '#projects'],
+  ['About', '#about'],
+  ['Builds', '#projects'],
   ['Experience', '#experience'],
   ['Stack', '#stack'],
 ];
 
-const repoSignal = {
-  screened: 26,
-  featured: 6,
-  publicRepos: '26 public repos',
-  updated: 'GitHub scan: Apr 30, 2026',
-};
-
-const proofPoints = [
-  { value: '26', label: 'public repos reviewed' },
-  { value: '5', label: 'MongoDB entities in RoutePulse' },
-  { value: '45+', label: 'products in Java e-store inventory' },
-  { value: '6', label: 'featured builds showcasing my learning journey' },
+const buildProcess = [
+  {
+    label: 'Spot',
+    title: 'I find what is actually broken',
+    text: 'I look for the step people repeat out of habit, the tool they work around, or the part of a workflow nobody has fixed because it has always been that way.',
+  },
+  {
+    label: 'Map',
+    title: 'I plan before I touch the code',
+    text: 'I sketch the data model, pick the right tools, and map the path until the direction is clear. Good decisions here make the build fast and the logic obvious.',
+  },
+  {
+    label: 'Build',
+    title: 'I own it from first commit to ship',
+    text: 'Full cycle architecture, implementation, testing, and deployment. I keep iterating until the product does exactly what it was built for, cleanly and reliably.',
+  },
 ];
 
 const featuredProjects = [
@@ -45,7 +63,7 @@ const featuredProjects = [
     name: 'RoutePulse',
     repo: 'Group-Project',
     type: 'Full-stack logistics platform',
-    rank: 'Flagship',
+    rank: 'Flagship build',
     date: 'Updated Apr 2026',
     language: 'JavaScript',
     href: 'https://github.com/eduardo-canelas/Group-Project',
@@ -53,73 +71,57 @@ const featuredProjects = [
     summary:
       'MERN package-tracking app for admins and drivers with role-based dashboards, package CRUD, driver assignment, and handling-event history.',
     proof:
-      'Key portfolio showcase: React, Vite, Express, MongoDB, protected role workflows, many-to-many package and facility events, and deployed product polish.',
+      'Built around a real operational need: helping teams see responsibility, movement, and package history without digging through messy handoffs.',
     stack: ['React', 'Vite', 'Node', 'Express', 'MongoDB', 'Mongoose'],
-    metrics: ['5 entities', '2 roles', 'many-to-many events'],
-  },
-  {
-    name: 'Multi-Threaded Routing',
-    repo: 'Multi-Threaded-Routing',
-    type: 'Concurrent package routing simulation',
-    rank: 'Systems signal',
-    date: 'Updated Jun 2025',
-    language: 'Java',
-    href: 'https://github.com/eduardo-canelas/Multi-Threaded-Routing',
-    live: null,
-    summary:
-      'Java simulation of package routing with synchronized conveyor access and deadlock avoidance.',
-    proof:
-      'A compact but valuable signal for concurrency, synchronization, resource contention, and logistics-domain reasoning.',
-    stack: ['Java', 'Threads', 'Synchronization', 'Routing'],
-    metrics: ['deadlock avoidance', 'shared conveyors', 'simulation'],
+    metrics: ['5 data entities', '2 user roles', 'chain of custody'],
   },
   {
     name: 'CLOZI',
     repo: 'CLOZI',
-    type: 'Mobile product startup',
-    rank: 'Production App',
+    type: 'Mobile wardrobe product',
+    rank: 'Product ownership',
     date: 'Updated Apr 2026',
     language: 'TypeScript',
     href: 'https://github.com/eduardo-canelas/CLOZI',
     live: null,
     summary:
-      'Architecting a React Native, TypeScript, JavaScript, and Supabase mobile product with secure data modeling, AI outfit workflows, and release gates.',
+      'React Native and Supabase mobile product with secure data modeling, outfit workflows, release gates, and startup-level product direction.',
     proof:
-      'Strongest signal for mobile development, Supabase backend integration, complex state management, and real-world product delivery.',
+      'A personal product bet on building software that can make daily decisions feel lighter, more useful, and more human.',
     stack: ['React Native', 'TypeScript', 'Supabase', 'Postgres'],
-    metrics: ['48 tables', '166 RLS policies', 'CI/CD'],
+    metrics: ['48 tables', '166 RLS policies', 'CI gates'],
   },
   {
     name: 'Risker Agent Backend',
     repo: 'RiskerAgentBackend',
-    type: 'AI Carrier-Matching API',
-    rank: 'AI Workflows',
+    type: 'AI carrier-matching API',
+    rank: 'AI workflow',
     date: 'Updated Apr 2026',
     language: 'Python',
     href: 'https://github.com/eduardo-canelas/RiskerAgentBackend',
     live: null,
     summary:
-      'Backend infrastructure for an AI carrier-matching workflow across 45 insurance carriers, reducing manual research through pre-qualification logic.',
+      'Backend infrastructure for AI carrier matching across insurance carriers, with pre-qualification logic that reduces manual research.',
     proof:
-      'Demonstrates Python backend architecture, AI/LLM integration for complex business logic, and automated workflow optimizations.',
-    stack: ['Python', 'AI Agents', 'FastAPI', 'Workflows'],
-    metrics: ['45 carriers', '25% workflow lift', 'AI integration'],
+      'Connects AI automation with a practical business workflow so people can move faster without losing the logic behind the decision.',
+    stack: ['Python', 'AI Agents', 'FastAPI', 'Workflow logic'],
+    metrics: ['45 carriers', '25% workflow lift', 'pre-qualification'],
   },
   {
-    name: 'Habitz',
-    repo: 'habitz',
-    type: 'Habit scheduling app',
-    rank: 'UX system',
-    date: 'Updated Dec 2024',
-    language: 'CSS',
-    href: 'https://github.com/eduardo-canelas/habitz',
+    name: 'Multi-Threaded Routing',
+    repo: 'Multi-Threaded-Routing',
+    type: 'Concurrent routing simulation',
+    rank: 'Systems thinking',
+    date: 'Updated Jun 2025',
+    language: 'Java',
+    href: 'https://github.com/eduardo-canelas/Multi-Threaded-Routing',
     live: null,
     summary:
-      'A habit planning interface where users create and schedule routines around their lifestyle.',
+      'Java package-routing simulation with synchronized conveyor access, shared resource contention, and deadlock avoidance.',
     proof:
-      'Good portfolio support for consumer UX, responsive layout, habit data states, and interface clarity.',
-    stack: ['CSS', 'Frontend UI', 'Scheduling UX'],
-    metrics: ['6.7 MB repo', 'habit flows', 'consumer app'],
+      'A systems project that made abstract concurrency ideas concrete through routing, shared resources, and real timing constraints.',
+    stack: ['Java', 'Threads', 'Synchronization', 'Routing'],
+    metrics: ['shared conveyors', 'deadlock avoidance', 'simulation'],
   },
   {
     name: 'Nile Dot Com',
@@ -131,11 +133,27 @@ const featuredProjects = [
     href: 'https://github.com/eduardo-canelas/E-Store-Application',
     live: null,
     summary:
-      'Desktop e-store simulation with product search, shopping cart logic, inventory validation, discounts, tax, invoices, and transaction history.',
+      'Desktop e-store with product search, cart logic, inventory checks, tax, discounts, invoices, and transaction history.',
     proof:
-      'Shows OOP, event-driven GUI programming, file I/O, validation, business rules, and persistence in a non-web environment.',
+      'A desktop app focused on clear business rules, validation, and everyday transaction flow outside the usual web-app lane.',
     stack: ['Java', 'Swing', 'CSV persistence', 'OOP'],
     metrics: ['45+ items', 'file I/O', 'transaction logs'],
+  },
+  {
+    name: 'Habitz',
+    repo: 'habitz',
+    type: 'Habit scheduling interface',
+    rank: 'UX system',
+    date: 'Updated Dec 2024',
+    language: 'CSS',
+    href: 'https://github.com/eduardo-canelas/habitz',
+    live: null,
+    summary:
+      'Consumer habit-planning interface where users create routines and schedule them around everyday life.',
+    proof:
+      'Explores consumer UX, habit states, and small interface decisions that help people stay organized in everyday life.',
+    stack: ['CSS', 'Frontend UI', 'Scheduling UX'],
+    metrics: ['habit flows', 'responsive UI', 'consumer app'],
   },
 ];
 
@@ -145,15 +163,11 @@ const supportingRepos = [
   'DOM-Manipulation',
   'CSS-Animations',
   'CSS-Layouts',
-  'CSS-Practice',
   'Pizzeria',
   'Rock-Paper-Scissors-Game',
-  'ValenceCollegeManagementSystem',
-  'Cryptographic_Communication_System_Implementation',
-  'Expense_Tracker',
-  'Bakery-Shop-Management',
-  'Golf-Tournament-Database',
-  'Hangman_Game',
+  'Cryptographic Communication System',
+  'Expense Tracker',
+  'Golf Tournament Database',
 ];
 
 const experiences = [
@@ -179,7 +193,7 @@ const experiences = [
     dates: 'Nov 2022 to Present',
     summary:
       'Led daily event operations across multiple venues while coordinating 15+ staff members under live production constraints.',
-    evidence: ['2 events per day', '6+ venues', '100 percent on-time readiness'],
+    evidence: ['2 events per day', '6+ venues', 'on-time readiness'],
   },
 ];
 
@@ -187,188 +201,246 @@ const stackGroups = [
   ['Languages', ['JavaScript', 'TypeScript', 'Java', 'SQL', 'Python', 'C']],
   ['Frontend', ['React', 'React Native', 'Vite', 'Expo', 'CSS architecture', 'Responsive UI']],
   ['Backend and Data', ['Node', 'Express', 'MongoDB', 'Mongoose', 'Supabase', 'Postgres', 'REST APIs']],
-  ['Quality and Delivery', ['Automated testing', 'E2E regression', 'CI/CD gates', 'Code review', 'GitHub workflows']],
-  ['AI and Product', ['Gemini', 'OpenAI', 'Claude Code', 'AI agents', 'Prompt design', 'AI-assisted development', 'Data modeling']],
+  ['Quality and Delivery', ['Automated testing', 'E2E checks', 'CI/CD gates', 'Code review', 'GitHub workflows']],
+  ['AI and Product', ['Gemini', 'OpenAI', 'Claude Code', 'AI agents', 'Prompt design', 'Data modeling']],
 ];
 
-function ArrowIcon() {
+function useLocalTheme() {
+  const [theme, setTheme] = useState(() => {
+    if (typeof window === 'undefined') return 'light';
+    return window.localStorage.getItem('portfolio-theme') || 'light';
+  });
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    window.localStorage.setItem('portfolio-theme', theme);
+  }, [theme]);
+
+  return [theme, setTheme];
+}
+
+function ThemeToggle({ theme, onToggle }) {
+  const isDark = theme === 'dark';
+
   return (
-    <svg aria-hidden="true" viewBox="0 0 24 24">
-      <path d="M5 12h13M13 6l6 6-6 6" />
-    </svg>
+    <button className="theme-toggle" onClick={onToggle} type="button" aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}>
+      <span className="theme-track" aria-hidden="true">
+        <span className="theme-thumb">{isDark ? <Moon size={15} weight="bold" /> : <Sun size={15} weight="bold" />}</span>
+      </span>
+      <span>{isDark ? 'Dark' : 'Light'}</span>
+    </button>
   );
 }
 
-function ExternalIcon() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24">
-      <path d="M8 7h9v9" />
-      <path d="M17 7 6 18" />
-    </svg>
-  );
-}
+function Header({ theme, onToggleTheme }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [hoverStyle, setHoverStyle] = useState({ opacity: 0, left: 0, width: 0 });
+  const headerRef = useRef(null);
 
-function MailIcon() {
+  useGSAP(
+    () => {
+      gsap.fromTo(headerRef.current, { y: -24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.75, ease: 'expo.out' });
+    },
+    { scope: headerRef }
+  );
+
+  useEffect(() => {
+    const close = () => setMenuOpen(false);
+    window.addEventListener('scroll', close, { passive: true });
+    return () => window.removeEventListener('scroll', close);
+  }, []);
+
+  const handleMouseEnter = (event) => {
+    const { offsetLeft, offsetWidth } = event.currentTarget;
+    setHoverStyle({ opacity: 1, left: offsetLeft, width: offsetWidth });
+  };
+
   return (
-    <svg aria-hidden="true" viewBox="0 0 24 24">
-      <path d="M4 6h16v12H4z" />
-      <path d="m4 7 8 6 8-6" />
-    </svg>
+    <>
+      <header className="site-header" ref={headerRef}>
+        <a className="brand-mark" href="#top" aria-label="Eduardo Canelas home">
+          <img src={profile.photo} alt="" />
+          <span>{profile.shortName}</span>
+        </a>
+
+        <nav aria-label="Portfolio sections" onMouseLeave={() => setHoverStyle((style) => ({ ...style, opacity: 0 }))}>
+          <span className="nav-indicator" style={hoverStyle} aria-hidden="true" />
+          {navItems.map(([label, href]) => (
+            <a key={label} href={href} onMouseEnter={handleMouseEnter}>
+              {label}
+            </a>
+          ))}
+        </nav>
+
+        <div className="header-actions">
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+          <a className="header-cta" href={`mailto:${profile.email}`}>
+            Contact
+          </a>
+          <button
+            className="menu-toggle"
+            onClick={() => setMenuOpen((open) => !open)}
+            type="button"
+            aria-label={menuOpen ? 'Close navigation' : 'Open navigation'}
+            aria-expanded={menuOpen}
+          >
+            {menuOpen ? <X size={18} weight="bold" /> : <Rows size={18} weight="bold" />}
+          </button>
+        </div>
+      </header>
+
+      {menuOpen && (
+        <nav className="mobile-nav-overlay" aria-label="Mobile navigation">
+          {navItems.map(([label, href]) => (
+            <a key={label} href={href} onClick={() => setMenuOpen(false)}>
+              {label}
+            </a>
+          ))}
+          <button type="button" onClick={onToggleTheme}>
+            Switch to {theme === 'dark' ? 'light' : 'dark'} mode
+          </button>
+          <a href={`mailto:${profile.email}`} onClick={() => setMenuOpen(false)}>
+            Contact Eduardo
+          </a>
+        </nav>
+      )}
+    </>
   );
 }
 
 function GraduationCountdown() {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  const containerRef = useRef(null);
 
   useEffect(() => {
-    const targetDate = new Date('2026-05-09T00:00:00');
+    const targetDate = new Date('2026-05-09T00:00:00-04:00');
 
     const updateTimer = () => {
-      const now = new Date();
-      const difference = targetDate - now;
+      const difference = targetDate.getTime() - Date.now();
 
-      if (difference > 0) {
-        setTimeLeft({
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-          minutes: Math.floor((difference / 1000 / 60) % 60),
-          seconds: Math.floor((difference / 1000) % 60),
-        });
-      } else {
+      if (difference <= 0) {
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        return;
       }
+
+      setTimeLeft({
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((difference / 1000 / 60) % 60),
+        seconds: Math.floor((difference / 1000) % 60),
+      });
     };
 
     updateTimer();
-    const intervalId = setInterval(updateTimer, 1000);
-    return () => clearInterval(intervalId);
+    const intervalId = window.setInterval(updateTimer, 1000);
+    return () => window.clearInterval(intervalId);
   }, []);
 
-  useGSAP(() => {
-    gsap.from(containerRef.current, {
-      opacity: 0,
-      y: 20,
-      duration: 1,
-      delay: 0.5,
-      ease: 'power3.out'
-    });
-  }, { scope: containerRef });
-
   return (
-    <div className="graduation-countdown load-in" ref={containerRef}>
+    <div className="graduation-countdown load-in" aria-label="Graduation countdown">
       <div className="countdown-eyebrow">
         <span className="pulse-dot" />
         Graduating May 9, 2026
       </div>
       <div className="countdown-timer">
-        <div className="time-block">
-          <span className="time-val">{String(timeLeft.days).padStart(2, '0')}</span>
-          <span className="time-label">DAYS</span>
-        </div>
-        <div className="time-block">
-          <span className="time-val">{String(timeLeft.hours).padStart(2, '0')}</span>
-          <span className="time-label">HRS</span>
-        </div>
-        <div className="time-block">
-          <span className="time-val">{String(timeLeft.minutes).padStart(2, '0')}</span>
-          <span className="time-label">MIN</span>
-        </div>
-        <div className="time-block">
-          <span className="time-val">{String(timeLeft.seconds).padStart(2, '0')}</span>
-          <span className="time-label">SEC</span>
-        </div>
+        {[
+          ['days', 'Days'],
+          ['hours', 'Hrs'],
+          ['minutes', 'Min'],
+          ['seconds', 'Sec'],
+        ].map(([key, label]) => (
+          <div className="time-block" key={key}>
+            <span className="time-val">{String(timeLeft[key]).padStart(2, '0')}</span>
+            <span className="time-label">{label}</span>
+          </div>
+        ))}
       </div>
     </div>
   );
 }
 
-function Header() {
-  const [hoverStyle, setHoverStyle] = useState({ opacity: 0, left: 0, width: 0 });
-  const navRef = useRef(null);
-  const headerRef = useRef(null);
+function MagneticLink({ className, href, children, target, rel }) {
+  const ref = useRef(null);
 
-  useGSAP(() => {
-    gsap.fromTo(headerRef.current,
-      { y: -100, opacity: 0 },
-      { y: 0, opacity: 1, duration: 1.2, ease: 'expo.out', delay: 0.1 }
-    );
-  }, { scope: headerRef });
-
-  const handleMouseEnter = (e) => {
-    const { offsetLeft, offsetWidth } = e.currentTarget;
-    setHoverStyle({
-      opacity: 1,
-      left: offsetLeft,
-      width: offsetWidth,
-    });
+  const handlePointerMove = (event) => {
+    const element = ref.current;
+    if (!element || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const rect = element.getBoundingClientRect();
+    const x = (event.clientX - rect.left - rect.width / 2) * 0.16;
+    const y = (event.clientY - rect.top - rect.height / 2) * 0.16;
+    element.style.transform = `translate3d(${x}px, ${y}px, 0)`;
   };
 
-  const handleMouseLeave = () => {
-    setHoverStyle({ ...hoverStyle, opacity: 0 });
+  const reset = () => {
+    if (ref.current) ref.current.style.transform = 'translate3d(0, 0, 0)';
   };
 
   return (
-    <header className="site-header" ref={headerRef}>
-      <a className="brand" href="#top" aria-label="Eduardo Canelas home">
-        <span>Eduardo Canelas</span>
-      </a>
-      <nav aria-label="Portfolio sections" ref={navRef} onMouseLeave={handleMouseLeave}>
-        <div className="nav-indicator" style={hoverStyle} aria-hidden="true" />
-        {navItems.map(([label, href]) => (
-          <a key={label} href={href} onMouseEnter={handleMouseEnter}>
-            {label}
-          </a>
-        ))}
-      </nav>
-      <a className="header-cta" href={`mailto:${profile.email}`}>
-        Contact
-      </a>
-    </header>
+    <a className={`button ${className}`} href={href} target={target} rel={rel} ref={ref} onPointerMove={handlePointerMove} onPointerLeave={reset}>
+      {children}
+    </a>
   );
 }
 
-function ProjectConsole({ activeProject, setActiveProject }) {
+function ProjectOrbit({ activeProject, setActiveProject }) {
   const project = featuredProjects[activeProject];
 
   return (
-    <aside className="project-console" aria-label="Interactive featured project inspector">
-      <div className="console-head">
-        <span>Project Showcase</span>
-        <strong>{repoSignal.updated}</strong>
-      </div>
-      <div className="radar-stage" aria-hidden="true">
-        <svg className="radar-lines" viewBox="0 0 100 100">
-          <path d="M13 70 C28 20 58 18 84 36" />
-          <path d="M18 78 C42 76 59 58 72 22" />
-          <path d="M26 30 C39 64 61 72 88 55" />
-        </svg>
-        {featuredProjects.slice(0, 5).map((item, index) => (
-          <button
-            aria-label={`Inspect ${item.name}`}
-            className={`radar-node node-${index} ${activeProject === index ? 'is-active' : ''}`}
-            key={item.name}
-            onClick={() => setActiveProject(index)}
-            type="button"
-          >
-            <span>{String(index + 1).padStart(2, '0')}</span>
-          </button>
-        ))}
-        <div className="radar-core">
-          <img src={profile.photo} alt="" />
+    <aside className="project-orbit load-in" aria-label="Interactive featured project selector" aria-live="polite">
+      <div className="orbit-map-grid">
+        <div className="orbit-stage" aria-hidden="false">
+          <svg className="orbit-lines" viewBox="0 0 100 100" aria-hidden="true">
+            <path d="M14 66 C26 24 58 14 84 34" />
+            <path d="M15 76 C42 80 68 58 75 18" />
+            <path d="M24 28 C38 68 63 75 90 52" />
+          </svg>
+          <div className="orbit-core">
+            <img src={profile.photo} alt="" />
+            <span>Available</span>
+          </div>
+          {featuredProjects.map((project, index) => (
+            <button
+              className={`orbit-node orbit-node-${index} ${activeProject === index ? 'is-active' : ''}`}
+              key={project.name}
+              onClick={() => setActiveProject(index)}
+              type="button"
+              aria-label={`Inspect ${project.name}`}
+              aria-pressed={activeProject === index}
+            >
+              <span>{String(index + 1).padStart(2, '0')}</span>
+            </button>
+          ))}
+        </div>
+        <div className="orbit-rank-list" aria-label="Featured project selector">
+          {featuredProjects.map((item, index) => (
+            <button
+              className={activeProject === index ? 'is-active' : ''}
+              key={item.name}
+              onClick={() => setActiveProject(index)}
+              type="button"
+              aria-pressed={activeProject === index}
+            >
+              <span>{String(index + 1).padStart(2, '0')}</span>
+              <strong>{item.name}</strong>
+              <small>{item.rank}</small>
+            </button>
+          ))}
         </div>
       </div>
-      <div className="console-readout">
-        <span>{project.rank}</span>
+      <div className="orbit-readout" key={project.name}>
+        <div className="orbit-readout-top">
+          <span>{String(activeProject + 1).padStart(2, '0')} viewing</span>
+          <strong>{project.rank}</strong>
+        </div>
         <h2>{project.name}</h2>
-        <p>{project.proof}</p>
-        <div className="console-links">
+        <p>{project.type}</p>
+        <small>{project.proof}</small>
+        <div className="orbit-actions">
           <a href={project.href} target="_blank" rel="noreferrer">
-            GitHub <ExternalIcon />
+            Open repo <GithubLogo size={16} weight="bold" />
           </a>
           {project.live && (
             <a href={project.live} target="_blank" rel="noreferrer">
-              Live app <ExternalIcon />
+              Live app <ArrowRight size={16} weight="bold" />
             </a>
           )}
         </div>
@@ -377,8 +449,105 @@ function ProjectConsole({ activeProject, setActiveProject }) {
   );
 }
 
+function BuildProcessPanel() {
+  const processRef = useRef(null);
+
+  useGSAP(
+    () => {
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      gsap.from('.process-track-node', {
+        autoAlpha: 0,
+        scale: reduceMotion ? 1 : 0.5,
+        duration: reduceMotion ? 0.01 : 0.52,
+        ease: 'back.out(1.7)',
+        stagger: 0.16,
+      });
+
+      gsap.from('.process-step', {
+        autoAlpha: 0,
+        y: reduceMotion ? 0 : 20,
+        duration: reduceMotion ? 0.01 : 0.6,
+        ease: 'power3.out',
+        stagger: 0.1,
+        delay: reduceMotion ? 0 : 0.28,
+      });
+
+      if (!reduceMotion) {
+        gsap.fromTo(
+          '.process-track-fill',
+          { scaleX: 0 },
+          { scaleX: 1, duration: 1.2, ease: 'power3.out', transformOrigin: 'left center', delay: 0.1 }
+        );
+
+        gsap.fromTo(
+          '.process-path-dashes',
+          { strokeDashoffset: 0 },
+          {
+            strokeDashoffset: -132,
+            duration: 3.8,
+            ease: 'none',
+            repeat: -1,
+          }
+        );
+
+        gsap.to('.process-track-node span', {
+          scale: 1.06,
+          duration: 2.8,
+          ease: 'sine.inOut',
+          repeat: -1,
+          yoyo: true,
+          stagger: 0.3,
+        });
+      }
+    },
+    { scope: processRef }
+  );
+
+  return (
+    <div className="build-process reveal" ref={processRef}>
+      <div className="process-track" aria-hidden="true">
+        <svg className="process-track-svg" viewBox="0 0 640 100" preserveAspectRatio="none">
+          <path className="process-path-dashes" d="M80 50 Q210 15 320 50 Q430 85 560 50" />
+        </svg>
+        <div className="process-track-fill" />
+        {buildProcess.map((item, index) => (
+          <div className={`process-track-node process-track-node-${index}`} key={item.label}>
+            <span>{String(index + 1).padStart(2, '0')}</span>
+            <strong>{item.label}</strong>
+          </div>
+        ))}
+      </div>
+
+      <div className="process-steps" aria-label="Build process steps">
+        {buildProcess.map((item, index) => (
+          <article className="process-step" key={item.title}>
+            <div className="process-step-header">
+              <Sparkle size={15} weight="bold" />
+              <span>{String(index + 1).padStart(2, '0')}</span>
+            </div>
+            <h3>{item.title}</h3>
+            <p>{item.text}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SectionHeading({ eyebrow, title, detail }) {
+  return (
+    <div className="section-heading reveal">
+      <p>{eyebrow}</p>
+      <h2>{title}</h2>
+      {detail && <span>{detail}</span>}
+    </div>
+  );
+}
+
 function App() {
   const pageRef = useRef(null);
+  const [theme, setTheme] = useLocalTheme();
   const [activeProject, setActiveProject] = useState(0);
   const project = featuredProjects[activeProject];
   const selectedStack = useMemo(() => project.stack, [project]);
@@ -387,48 +556,54 @@ function App() {
     () => {
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      gsap.set('.load-in', { y: reduceMotion ? 0 : 28 });
+      gsap.set('.load-in', { y: reduceMotion ? 0 : 22 });
       gsap.to('.load-in', {
         y: 0,
-        duration: reduceMotion ? 0.01 : 0.85,
-        ease: 'power4.out',
-        stagger: 0.08,
+        duration: reduceMotion ? 0.01 : 0.8,
+        ease: 'expo.out',
+        stagger: 0.07,
       });
 
       gsap.utils.toArray('.reveal').forEach((element) => {
         gsap.from(element, {
           autoAlpha: 0,
-          y: reduceMotion ? 0 : 34,
-          duration: reduceMotion ? 0.01 : 0.75,
-          ease: 'power3.out',
+          y: reduceMotion ? 0 : 32,
+          duration: reduceMotion ? 0.01 : 0.72,
+          ease: 'power4.out',
           scrollTrigger: {
             trigger: element,
-            start: 'top 95%',
+            start: 'top 92%',
             once: true,
           },
         });
       });
 
       if (!reduceMotion) {
-        gsap.to('.radar-node', {
-          y: -7,
-          duration: 2.8,
+        gsap.to('.orbit-node', {
+          y: -8,
+          duration: 2.6,
           ease: 'sine.inOut',
           repeat: -1,
           yoyo: true,
-          stagger: 0.15,
+          stagger: 0.16,
         });
 
-        gsap.to('.radar-lines path', {
-          strokeDashoffset: -80,
-          duration: 4.8,
-          ease: 'none',
-          repeat: -1,
+        gsap.utils.toArray('.orbit-lines path').forEach((path, index) => {
+          gsap.fromTo(
+            path,
+            { strokeDashoffset: index * 24 },
+            {
+              strokeDashoffset: index % 2 === 0 ? -156 : 156,
+              duration: 4.8 + index * 0.5,
+              ease: 'none',
+              repeat: -1,
+            }
+          );
         });
 
-        gsap.to('.hero-photo img', {
-          scale: 1.055,
-          duration: 6,
+        gsap.to('.photo-card img', {
+          scale: 1.045,
+          duration: 6.5,
           ease: 'sine.inOut',
           repeat: -1,
           yoyo: true,
@@ -440,51 +615,51 @@ function App() {
 
   return (
     <main className="portfolio" ref={pageRef}>
-      <Header />
+      <Header theme={theme} onToggleTheme={() => setTheme((current) => (current === 'dark' ? 'light' : 'dark'))} />
 
       <section id="top" className="hero-section">
-        <div className="hero-identity load-in">
-          <div className="hero-photo">
+        <div className="hero-rail load-in">
+          <div className="photo-card">
             <img src={profile.photo} alt="Eduardo Canelas Eterovic" />
           </div>
-          <div className="identity-meta">
+          <div className="identity-note">
             <span>{profile.location}</span>
             <strong>{profile.role}</strong>
-            <p>{repoSignal.publicRepos} reviewed and ranked for this portfolio.</p>
+            <p>I build with product curiosity, technical discipline, and a commitment to building software that is practical and genuinely helpful.</p>
           </div>
         </div>
 
         <div className="hero-copy">
           <GraduationCountdown />
-          <h1 className="load-in">Passionate about building projects, learning continuously, and growing as a software engineer.</h1>
-          <p className="hero-summary load-in">{profile.focus}</p>
+          <p className="eyebrow load-in">Software portfolio by Eduardo Canelas</p>
+          <h1 className="load-in">I like building apps that solve real problems and make life easier.</h1>
           <div className="hero-actions load-in">
-            <a className="button primary" href="#projects">
-              View featured repos <ArrowIcon />
-            </a>
-            <a className="button secondary" href={profile.cv} target="_blank" rel="noreferrer">
-              Download CV
-            </a>
-          </div>
-          <div id="proof" className="proof-grid load-in" aria-label="Portfolio proof points">
-            {proofPoints.map((point) => (
-              <div key={point.label}>
-                <strong>{point.value}</strong>
-                <span>{point.label}</span>
-              </div>
-            ))}
+            <MagneticLink className="primary" href="#projects">
+              Explore my builds <ArrowRight size={18} weight="bold" />
+            </MagneticLink>
+            <MagneticLink className="secondary" href={profile.cv} target="_blank" rel="noreferrer">
+              Download CV <DownloadSimple size={18} weight="bold" />
+            </MagneticLink>
           </div>
         </div>
 
-        <ProjectConsole activeProject={activeProject} setActiveProject={setActiveProject} />
+        <ProjectOrbit activeProject={activeProject} setActiveProject={setActiveProject} />
+      </section>
+
+      <section id="about" className="about-band">
+        <div className="about-intent reveal">
+          <p>Why I build</p>
+          <h2>I want my work to feel useful, personal, and worth coming back to.</h2>
+        </div>
+        <BuildProcessPanel />
       </section>
 
       <section id="projects" className="section-band projects-band">
-        <div className="section-heading reveal">
-          <p>Featured GitHub work</p>
-          <h2>The best repositories are ranked for signal, not displayed as a flat gallery.</h2>
-          <span>{repoSignal.screened} repositories reviewed from github.com/eduardo-canelas.</span>
-        </div>
+        <SectionHeading
+          eyebrow="Featured builds"
+          title="A closer look at the apps, systems, and product ideas I care about building."
+          detail="Selected from 26 public repositories at github.com/eduardo-canelas."
+        />
 
         <div className="project-stage">
           <div className="project-list" role="list" aria-label="Featured repositories">
@@ -525,13 +700,13 @@ function App() {
               ))}
             </div>
             <div className="inspector-actions">
-              <a className="button primary" href={project.href} target="_blank" rel="noreferrer">
-                Open repo <ExternalIcon />
-              </a>
+              <MagneticLink className="primary" href={project.href} target="_blank" rel="noreferrer">
+                Open repo <GithubLogo size={18} weight="bold" />
+              </MagneticLink>
               {project.live && (
-                <a className="button secondary dark" href={project.live} target="_blank" rel="noreferrer">
-                  Launch app <ExternalIcon />
-                </a>
+                <MagneticLink className="secondary" href={project.live} target="_blank" rel="noreferrer">
+                  Launch app <ArrowRight size={18} weight="bold" />
+                </MagneticLink>
               )}
             </div>
           </article>
@@ -539,8 +714,8 @@ function App() {
 
         <div className="repo-strip reveal" aria-label="Supporting repositories reviewed">
           <div>
-            <span>Also screened</span>
-            <strong>{supportingRepos.length} supporting repos</strong>
+            <span>Also explored</span>
+            <strong>{supportingRepos.length} supporting builds</strong>
           </div>
           <ul>
             {supportingRepos.map((repo) => (
@@ -551,10 +726,10 @@ function App() {
       </section>
 
       <section id="experience" className="section-band experience-band">
-        <div className="section-heading reveal">
-          <p>Experience</p>
-          <h2>Operational roles that translate into product ownership and dependable delivery.</h2>
-        </div>
+        <SectionHeading
+          eyebrow="Experience"
+          title="My work has shaped how I think about people, constraints, ownership, and shipping."
+        />
         <div className="timeline">
           {experiences.map((item) => (
             <article className="timeline-item reveal" key={item.company}>
@@ -566,7 +741,10 @@ function App() {
               <p>{item.summary}</p>
               <ul>
                 {item.evidence.map((evidence) => (
-                  <li key={evidence}>{evidence}</li>
+                  <li key={evidence}>
+                    <CheckCircle size={15} weight="fill" />
+                    {evidence}
+                  </li>
                 ))}
               </ul>
             </article>
@@ -575,10 +753,7 @@ function App() {
       </section>
 
       <section id="stack" className="section-band stack-band">
-        <div className="section-heading reveal">
-          <p>Stack</p>
-          <h2>A practical toolkit for building user-facing systems end to end.</h2>
-        </div>
+        <SectionHeading eyebrow="Stack" title="A practical toolkit for turning ideas into useful, user-facing software." />
         <div className="stack-matrix">
           {stackGroups.map(([group, skills]) => (
             <article className="stack-group reveal" key={group}>
@@ -597,18 +772,18 @@ function App() {
         <div className="contact-panel reveal">
           <div>
             <p>Contact</p>
-            <h2>Ready for junior software engineer interviews and product-focused teams.</h2>
+            <h2>Open to teams that care about building thoughtful software with real-world impact.</h2>
           </div>
           <div className="contact-actions">
-            <a className="button primary" href={`mailto:${profile.email}`}>
-              <MailIcon /> Email Eduardo
-            </a>
-            <a className="button secondary dark" href={profile.linkedin} target="_blank" rel="noreferrer">
-              LinkedIn
-            </a>
-            <a className="button secondary dark" href={profile.github} target="_blank" rel="noreferrer">
-              GitHub
-            </a>
+            <MagneticLink className="primary" href={`mailto:${profile.email}`}>
+              Email Eduardo <PaperPlaneTilt size={18} weight="bold" />
+            </MagneticLink>
+            <MagneticLink className="secondary" href={profile.linkedin} target="_blank" rel="noreferrer">
+              LinkedIn <LinkedinLogo size={18} weight="bold" />
+            </MagneticLink>
+            <MagneticLink className="secondary" href={profile.github} target="_blank" rel="noreferrer">
+              GitHub <GithubLogo size={18} weight="bold" />
+            </MagneticLink>
           </div>
           <dl className="contact-meta">
             <div>
@@ -625,6 +800,10 @@ function App() {
             </div>
           </dl>
         </div>
+        <footer className="site-footer">
+          <Briefcase size={16} weight="bold" />
+          <span>Designed to show the builder, the craft, and the intent behind the work.</span>
+        </footer>
       </section>
     </main>
   );

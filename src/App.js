@@ -9,10 +9,10 @@ import {
   Moon,
   PaperPlaneTilt,
   Rows,
-  Sparkle,
   Sun,
   X,
 } from '@phosphor-icons/react';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
@@ -205,6 +205,102 @@ const stackGroups = [
   ['AI and Product', ['Gemini', 'OpenAI', 'Claude Code', 'AI agents', 'Prompt design', 'Data modeling']],
 ];
 
+// ─── Three.js particle network ────────────────────────────────────────────────
+
+const NODE_COUNT = 52;
+const CONNECT_SQ = 2.7 * 2.7;
+
+function NetworkParticles({ isDark }) {
+  const groupRef = useRef(null);
+
+  const { nodeBuf, lineBuf } = useMemo(() => {
+    const pts = Array.from({ length: NODE_COUNT }, () => [
+      (Math.random() - 0.5) * 10,
+      (Math.random() - 0.5) * 7,
+      (Math.random() - 0.5) * 5,
+    ]);
+
+    const segs = [];
+    for (let i = 0; i < pts.length; i++) {
+      for (let j = i + 1; j < pts.length; j++) {
+        const dx = pts[i][0] - pts[j][0];
+        const dy = pts[i][1] - pts[j][1];
+        const dz = pts[i][2] - pts[j][2];
+        if (dx * dx + dy * dy + dz * dz < CONNECT_SQ) {
+          segs.push(...pts[i], ...pts[j]);
+        }
+      }
+    }
+
+    return {
+      nodeBuf: new Float32Array(pts.flat()),
+      lineBuf: new Float32Array(segs),
+    };
+  }, []);
+
+  useFrame(({ clock }) => {
+    if (!groupRef.current) return;
+    const t = clock.getElapsedTime();
+    groupRef.current.rotation.y = t * 0.042;
+    groupRef.current.rotation.x = Math.sin(t * 0.019) * 0.09;
+  });
+
+  const nodeColor = isDark ? '#a4d630' : '#6c9e14';
+  const lineColor = isDark ? '#4e7a0a' : '#9cc228';
+  const lineOpacity = isDark ? 0.24 : 0.18;
+
+  return (
+    <group ref={groupRef}>
+      {lineBuf.length > 0 && (
+        <lineSegments>
+          <bufferGeometry>
+            <bufferAttribute attach="attributes-position" args={[lineBuf, 3]} />
+          </bufferGeometry>
+          <lineBasicMaterial color={lineColor} transparent opacity={lineOpacity} />
+        </lineSegments>
+      )}
+      <points>
+        <bufferGeometry>
+          <bufferAttribute attach="attributes-position" args={[nodeBuf, 3]} />
+        </bufferGeometry>
+        <pointsMaterial
+          size={0.056}
+          color={nodeColor}
+          transparent
+          opacity={0.72}
+          sizeAttenuation
+        />
+      </points>
+    </group>
+  );
+}
+
+function HeroCanvas({ isDark }) {
+  const [active, setActive] = useState(false);
+
+  useEffect(() => {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const mobile = window.innerWidth < 820;
+    if (!reduced && !mobile) setActive(true);
+  }, []);
+
+  if (!active) return null;
+
+  return (
+    <div className="hero-canvas-wrap" aria-hidden="true">
+      <Canvas
+        camera={{ position: [0, 0, 8], fov: 52 }}
+        dpr={[1, 1.5]}
+        gl={{ alpha: true, antialias: false, powerPreference: 'low-power' }}
+      >
+        <NetworkParticles isDark={isDark} />
+      </Canvas>
+    </div>
+  );
+}
+
+// ─── Utilities ────────────────────────────────────────────────────────────────
+
 function useLocalTheme() {
   const [theme, setTheme] = useState(() => {
     if (typeof window === 'undefined') return 'light';
@@ -223,23 +319,37 @@ function ThemeToggle({ theme, onToggle }) {
   const isDark = theme === 'dark';
 
   return (
-    <button className="theme-toggle" onClick={onToggle} type="button" aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}>
+    <button
+      className="theme-toggle"
+      onClick={onToggle}
+      type="button"
+      aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
+    >
       <span className="theme-track" aria-hidden="true">
-        <span className="theme-thumb">{isDark ? <Moon size={15} weight="bold" /> : <Sun size={15} weight="bold" />}</span>
+        <span className="theme-thumb">
+          {isDark ? <Moon size={15} weight="bold" /> : <Sun size={15} weight="bold" />}
+        </span>
       </span>
       <span>{isDark ? 'Dark' : 'Light'}</span>
     </button>
   );
 }
 
+// ─── Header ───────────────────────────────────────────────────────────────────
+
 function Header({ theme, onToggleTheme }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [hoverStyle, setHoverStyle] = useState({ opacity: 0, left: 0, width: 0 });
   const headerRef = useRef(null);
+  const overlayRef = useRef(null);
 
   useGSAP(
     () => {
-      gsap.fromTo(headerRef.current, { y: -24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.75, ease: 'expo.out' });
+      gsap.fromTo(
+        headerRef.current,
+        { y: -28, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, ease: 'expo.out' }
+      );
     },
     { scope: headerRef }
   );
@@ -249,6 +359,23 @@ function Header({ theme, onToggleTheme }) {
     window.addEventListener('scroll', close, { passive: true });
     return () => window.removeEventListener('scroll', close);
   }, []);
+
+  useEffect(() => {
+    const el = overlayRef.current;
+    if (!el) return;
+    if (menuOpen) {
+      gsap.fromTo(
+        el,
+        { autoAlpha: 0, y: -12, scale: 0.97 },
+        { autoAlpha: 1, y: 0, scale: 1, duration: 0.32, ease: 'expo.out' }
+      );
+      gsap.fromTo(
+        el.querySelectorAll('a, button'),
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: 0.28, stagger: 0.05, ease: 'power3.out', delay: 0.06 }
+      );
+    }
+  }, [menuOpen]);
 
   const handleMouseEnter = (event) => {
     const { offsetLeft, offsetWidth } = event.currentTarget;
@@ -263,7 +390,10 @@ function Header({ theme, onToggleTheme }) {
           <span>{profile.shortName}</span>
         </a>
 
-        <nav aria-label="Portfolio sections" onMouseLeave={() => setHoverStyle((style) => ({ ...style, opacity: 0 }))}>
+        <nav
+          aria-label="Portfolio sections"
+          onMouseLeave={() => setHoverStyle((s) => ({ ...s, opacity: 0 }))}
+        >
           <span className="nav-indicator" style={hoverStyle} aria-hidden="true" />
           {navItems.map(([label, href]) => (
             <a key={label} href={href} onMouseEnter={handleMouseEnter}>
@@ -279,7 +409,7 @@ function Header({ theme, onToggleTheme }) {
           </a>
           <button
             className="menu-toggle"
-            onClick={() => setMenuOpen((open) => !open)}
+            onClick={() => setMenuOpen((o) => !o)}
             type="button"
             aria-label={menuOpen ? 'Close navigation' : 'Open navigation'}
             aria-expanded={menuOpen}
@@ -290,7 +420,11 @@ function Header({ theme, onToggleTheme }) {
       </header>
 
       {menuOpen && (
-        <nav className="mobile-nav-overlay" aria-label="Mobile navigation">
+        <nav
+          className="mobile-nav-overlay"
+          aria-label="Mobile navigation"
+          ref={overlayRef}
+        >
           {navItems.map(([label, href]) => (
             <a key={label} href={href} onClick={() => setMenuOpen(false)}>
               {label}
@@ -308,31 +442,31 @@ function Header({ theme, onToggleTheme }) {
   );
 }
 
+// ─── Countdown ────────────────────────────────────────────────────────────────
+
 function GraduationCountdown() {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
-    const targetDate = new Date('2026-05-09T00:00:00-04:00');
+    const target = new Date('2026-05-09T00:00:00-04:00');
 
-    const updateTimer = () => {
-      const difference = targetDate.getTime() - Date.now();
-
-      if (difference <= 0) {
+    const tick = () => {
+      const diff = target.getTime() - Date.now();
+      if (diff <= 0) {
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
         return;
       }
-
       setTimeLeft({
-        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-        minutes: Math.floor((difference / 1000 / 60) % 60),
-        seconds: Math.floor((difference / 1000) % 60),
+        days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((diff / 1000 / 60) % 60),
+        seconds: Math.floor((diff / 1000) % 60),
       });
     };
 
-    updateTimer();
-    const intervalId = window.setInterval(updateTimer, 1000);
-    return () => window.clearInterval(intervalId);
+    tick();
+    const id = window.setInterval(tick, 1000);
+    return () => window.clearInterval(id);
   }, []);
 
   return (
@@ -358,16 +492,18 @@ function GraduationCountdown() {
   );
 }
 
+// ─── Magnetic button ──────────────────────────────────────────────────────────
+
 function MagneticLink({ className, href, children, target, rel }) {
   const ref = useRef(null);
 
-  const handlePointerMove = (event) => {
-    const element = ref.current;
-    if (!element || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const rect = element.getBoundingClientRect();
-    const x = (event.clientX - rect.left - rect.width / 2) * 0.16;
-    const y = (event.clientY - rect.top - rect.height / 2) * 0.16;
-    element.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+  const handlePointerMove = (e) => {
+    const el = ref.current;
+    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const rect = el.getBoundingClientRect();
+    const x = (e.clientX - rect.left - rect.width / 2) * 0.16;
+    const y = (e.clientY - rect.top - rect.height / 2) * 0.16;
+    el.style.transform = `translate3d(${x}px, ${y}px, 0)`;
   };
 
   const reset = () => {
@@ -375,17 +511,31 @@ function MagneticLink({ className, href, children, target, rel }) {
   };
 
   return (
-    <a className={`button ${className}`} href={href} target={target} rel={rel} ref={ref} onPointerMove={handlePointerMove} onPointerLeave={reset}>
+    <a
+      className={`button ${className}`}
+      href={href}
+      target={target}
+      rel={rel}
+      ref={ref}
+      onPointerMove={handlePointerMove}
+      onPointerLeave={reset}
+    >
       {children}
     </a>
   );
 }
 
+// ─── Project orbit (hero) ─────────────────────────────────────────────────────
+
 function ProjectOrbit({ activeProject, setActiveProject }) {
   const project = featuredProjects[activeProject];
 
   return (
-    <aside className="project-orbit load-in" aria-label="Interactive featured project selector" aria-live="polite">
+    <aside
+      className="project-orbit load-in"
+      aria-label="Interactive featured project selector"
+      aria-live="polite"
+    >
       <div className="orbit-map-grid">
         <div className="orbit-stage" aria-hidden="false">
           <svg className="orbit-lines" viewBox="0 0 100 100" aria-hidden="true">
@@ -397,13 +547,13 @@ function ProjectOrbit({ activeProject, setActiveProject }) {
             <img src={profile.photo} alt="" />
             <span>Available</span>
           </div>
-          {featuredProjects.map((project, index) => (
+          {featuredProjects.map((p, index) => (
             <button
               className={`orbit-node orbit-node-${index} ${activeProject === index ? 'is-active' : ''}`}
-              key={project.name}
+              key={p.name}
               onClick={() => setActiveProject(index)}
               type="button"
-              aria-label={`Inspect ${project.name}`}
+              aria-label={`Inspect ${p.name}`}
               aria-pressed={activeProject === index}
             >
               <span>{String(index + 1).padStart(2, '0')}</span>
@@ -426,6 +576,7 @@ function ProjectOrbit({ activeProject, setActiveProject }) {
           ))}
         </div>
       </div>
+
       <div className="orbit-readout" key={project.name}>
         <div className="orbit-readout-top">
           <span>{String(activeProject + 1).padStart(2, '0')} viewing</span>
@@ -449,31 +600,35 @@ function ProjectOrbit({ activeProject, setActiveProject }) {
   );
 }
 
+// ─── Build process panel ──────────────────────────────────────────────────────
+
 function BuildProcessPanel() {
+  const [activeStep, setActiveStep] = useState(0);
   const processRef = useRef(null);
+  const detailRef = useRef(null);
+  const didMount = useRef(false);
 
   useGSAP(
     () => {
-      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       gsap.from('.process-track-node', {
         autoAlpha: 0,
-        scale: reduceMotion ? 1 : 0.5,
-        duration: reduceMotion ? 0.01 : 0.52,
+        scale: reduce ? 1 : 0.5,
+        duration: reduce ? 0.01 : 0.52,
         ease: 'back.out(1.7)',
         stagger: 0.16,
       });
 
-      gsap.from('.process-step', {
+      gsap.from('.process-detail', {
         autoAlpha: 0,
-        y: reduceMotion ? 0 : 20,
-        duration: reduceMotion ? 0.01 : 0.6,
+        y: reduce ? 0 : 22,
+        duration: reduce ? 0.01 : 0.6,
         ease: 'power3.out',
-        stagger: 0.1,
-        delay: reduceMotion ? 0 : 0.28,
+        delay: reduce ? 0 : 0.32,
       });
 
-      if (!reduceMotion) {
+      if (!reduce) {
         gsap.fromTo(
           '.process-track-fill',
           { scaleX: 0 },
@@ -483,15 +638,10 @@ function BuildProcessPanel() {
         gsap.fromTo(
           '.process-path-dashes',
           { strokeDashoffset: 0 },
-          {
-            strokeDashoffset: -132,
-            duration: 3.8,
-            ease: 'none',
-            repeat: -1,
-          }
+          { strokeDashoffset: -132, duration: 3.8, ease: 'none', repeat: -1 }
         );
 
-        gsap.to('.process-track-node span', {
+        gsap.to('.process-track-node .node-circle', {
           scale: 1.06,
           duration: 2.8,
           ease: 'sine.inOut',
@@ -504,36 +654,78 @@ function BuildProcessPanel() {
     { scope: processRef }
   );
 
+  const handleStepChange = (index) => {
+    if (index === activeStep) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || !detailRef.current) {
+      setActiveStep(index);
+      return;
+    }
+    gsap.to(detailRef.current, {
+      autoAlpha: 0,
+      y: 8,
+      duration: 0.16,
+      ease: 'power2.in',
+      onComplete: () => setActiveStep(index),
+    });
+  };
+
+  useEffect(() => {
+    if (!didMount.current) {
+      didMount.current = true;
+      return;
+    }
+    if (!detailRef.current) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) return;
+    gsap.fromTo(
+      detailRef.current,
+      { autoAlpha: 0, y: 14 },
+      { autoAlpha: 1, y: 0, duration: 0.32, ease: 'power3.out' }
+    );
+  }, [activeStep]);
+
+  const step = buildProcess[activeStep];
+
   return (
     <div className="build-process reveal" ref={processRef}>
       <div className="process-track" aria-hidden="true">
-        <svg className="process-track-svg" viewBox="0 0 640 100" preserveAspectRatio="none">
+        <svg
+          className="process-track-svg"
+          viewBox="0 0 640 100"
+          preserveAspectRatio="none"
+        >
           <path className="process-path-dashes" d="M80 50 Q210 15 320 50 Q430 85 560 50" />
         </svg>
         <div className="process-track-fill" />
         {buildProcess.map((item, index) => (
-          <div className={`process-track-node process-track-node-${index}`} key={item.label}>
-            <span>{String(index + 1).padStart(2, '0')}</span>
+          <button
+            className={`process-track-node process-track-node-${index} ${activeStep === index ? 'is-active' : ''}`}
+            key={item.label}
+            onClick={() => handleStepChange(index)}
+            type="button"
+            aria-label={`Show step: ${item.label}`}
+            aria-pressed={activeStep === index}
+          >
+            <span className="node-circle">{String(index + 1).padStart(2, '0')}</span>
             <strong>{item.label}</strong>
-          </div>
+          </button>
         ))}
       </div>
 
-      <div className="process-steps" aria-label="Build process steps">
-        {buildProcess.map((item, index) => (
-          <article className="process-step" key={item.title}>
-            <div className="process-step-header">
-              <Sparkle size={15} weight="bold" />
-              <span>{String(index + 1).padStart(2, '0')}</span>
-            </div>
-            <h3>{item.title}</h3>
-            <p>{item.text}</p>
-          </article>
-        ))}
+      <div className="process-detail" ref={detailRef} aria-live="polite">
+        <div className="process-detail-meta">
+          <span className="process-detail-num">{String(activeStep + 1).padStart(2, '0')}</span>
+          <span className="process-detail-label">{step.label}</span>
+        </div>
+        <h3>{step.title}</h3>
+        <p>{step.text}</p>
       </div>
     </div>
   );
 }
+
+// ─── Section heading ──────────────────────────────────────────────────────────
 
 function SectionHeading({ eyebrow, title, detail }) {
   return (
@@ -545,56 +737,77 @@ function SectionHeading({ eyebrow, title, detail }) {
   );
 }
 
+// ─── App ──────────────────────────────────────────────────────────────────────
+
 function App() {
   const pageRef = useRef(null);
+  const inspectorRef = useRef(null);
+  const firstProjectRender = useRef(true);
   const [theme, setTheme] = useLocalTheme();
   const [activeProject, setActiveProject] = useState(0);
   const project = featuredProjects[activeProject];
   const selectedStack = useMemo(() => project.stack, [project]);
 
+  // Animate inspector content when project switches
+  useEffect(() => {
+    if (firstProjectRender.current) {
+      firstProjectRender.current = false;
+      return;
+    }
+    if (!inspectorRef.current) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) return;
+    gsap.fromTo(
+      inspectorRef.current.children,
+      { opacity: 0, y: 10 },
+      { opacity: 1, y: 0, duration: 0.3, stagger: 0.055, ease: 'power3.out' }
+    );
+  }, [activeProject]);
+
   useGSAP(
     () => {
-      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      gsap.set('.load-in', { y: reduceMotion ? 0 : 22 });
+      gsap.set('.load-in', { y: reduce ? 0 : 26, opacity: 0 });
       gsap.to('.load-in', {
         y: 0,
-        duration: reduceMotion ? 0.01 : 0.8,
+        opacity: 1,
+        duration: reduce ? 0.01 : 0.84,
         ease: 'expo.out',
-        stagger: 0.07,
+        stagger: 0.075,
       });
 
-      gsap.utils.toArray('.reveal').forEach((element) => {
-        gsap.from(element, {
+      gsap.utils.toArray('.reveal').forEach((el) => {
+        gsap.from(el, {
           autoAlpha: 0,
-          y: reduceMotion ? 0 : 32,
-          duration: reduceMotion ? 0.01 : 0.72,
+          y: reduce ? 0 : 34,
+          duration: reduce ? 0.01 : 0.76,
           ease: 'power4.out',
           scrollTrigger: {
-            trigger: element,
-            start: 'top 92%',
+            trigger: el,
+            start: 'top 91%',
             once: true,
           },
         });
       });
 
-      if (!reduceMotion) {
+      if (!reduce) {
         gsap.to('.orbit-node', {
           y: -8,
           duration: 2.6,
           ease: 'sine.inOut',
           repeat: -1,
           yoyo: true,
-          stagger: 0.16,
+          stagger: 0.18,
         });
 
-        gsap.utils.toArray('.orbit-lines path').forEach((path, index) => {
+        gsap.utils.toArray('.orbit-lines path').forEach((path, i) => {
           gsap.fromTo(
             path,
-            { strokeDashoffset: index * 24 },
+            { strokeDashoffset: i * 24 },
             {
-              strokeDashoffset: index % 2 === 0 ? -156 : 156,
-              duration: 4.8 + index * 0.5,
+              strokeDashoffset: i % 2 === 0 ? -156 : 156,
+              duration: 4.8 + i * 0.5,
               ease: 'none',
               repeat: -1,
             }
@@ -608,6 +821,18 @@ function App() {
           repeat: -1,
           yoyo: true,
         });
+
+        // Subtle parallax on hero rail
+        gsap.to('.hero-rail', {
+          y: -28,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '.hero-section',
+            start: 'top top',
+            end: 'bottom top',
+            scrub: 1.2,
+          },
+        });
       }
     },
     { scope: pageRef }
@@ -615,9 +840,15 @@ function App() {
 
   return (
     <main className="portfolio" ref={pageRef}>
-      <Header theme={theme} onToggleTheme={() => setTheme((current) => (current === 'dark' ? 'light' : 'dark'))} />
+      <Header
+        theme={theme}
+        onToggleTheme={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
+      />
 
+      {/* ── Hero ── */}
       <section id="top" className="hero-section">
+        <HeroCanvas isDark={theme === 'dark'} />
+
         <div className="hero-rail load-in">
           <div className="photo-card">
             <img src={profile.photo} alt="Eduardo Canelas Eterovic" />
@@ -625,14 +856,19 @@ function App() {
           <div className="identity-note">
             <span>{profile.location}</span>
             <strong>{profile.role}</strong>
-            <p>I build with product curiosity, technical discipline, and a commitment to building software that is practical and genuinely helpful.</p>
+            <p>
+              I build with product curiosity, technical discipline, and a commitment to building
+              software that is practical and genuinely helpful.
+            </p>
           </div>
         </div>
 
         <div className="hero-copy">
           <GraduationCountdown />
           <p className="eyebrow load-in">Software portfolio by Eduardo Canelas</p>
-          <h1 className="load-in">I like building apps that solve real problems and make life easier.</h1>
+          <h1 className="load-in">
+            I like building apps that solve real problems and make life easier.
+          </h1>
           <div className="hero-actions load-in">
             <MagneticLink className="primary" href="#projects">
               Explore my builds <ArrowRight size={18} weight="bold" />
@@ -646,6 +882,7 @@ function App() {
         <ProjectOrbit activeProject={activeProject} setActiveProject={setActiveProject} />
       </section>
 
+      {/* ── About / Build process ── */}
       <section id="about" className="about-band">
         <div className="about-intent reveal">
           <p>Why I build</p>
@@ -654,6 +891,7 @@ function App() {
         <BuildProcessPanel />
       </section>
 
+      {/* ── Projects ── */}
       <section id="projects" className="section-band projects-band">
         <SectionHeading
           eyebrow="Featured builds"
@@ -681,7 +919,11 @@ function App() {
             ))}
           </div>
 
-          <article className="project-inspector reveal" aria-live="polite">
+          <article
+            className="project-inspector reveal"
+            aria-live="polite"
+            ref={inspectorRef}
+          >
             <div className="inspector-top">
               <span>{project.rank}</span>
               <span>{project.date}</span>
@@ -690,8 +932,8 @@ function App() {
             <p>{project.summary}</p>
             <blockquote>{project.proof}</blockquote>
             <div className="metric-strip">
-              {project.metrics.map((metric) => (
-                <span key={metric}>{metric}</span>
+              {project.metrics.map((m) => (
+                <span key={m}>{m}</span>
               ))}
             </div>
             <div className="stack-pills">
@@ -704,7 +946,12 @@ function App() {
                 Open repo <GithubLogo size={18} weight="bold" />
               </MagneticLink>
               {project.live && (
-                <MagneticLink className="secondary" href={project.live} target="_blank" rel="noreferrer">
+                <MagneticLink
+                  className="secondary"
+                  href={project.live}
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   Launch app <ArrowRight size={18} weight="bold" />
                 </MagneticLink>
               )}
@@ -725,6 +972,7 @@ function App() {
         </div>
       </section>
 
+      {/* ── Experience ── */}
       <section id="experience" className="section-band experience-band">
         <SectionHeading
           eyebrow="Experience"
@@ -733,17 +981,17 @@ function App() {
         <div className="timeline">
           {experiences.map((item) => (
             <article className="timeline-item reveal" key={item.company}>
-              <div>
+              <div className="timeline-meta">
                 <span>{item.dates}</span>
                 <h3>{item.company}</h3>
                 <p>{item.title}</p>
               </div>
-              <p>{item.summary}</p>
-              <ul>
-                {item.evidence.map((evidence) => (
-                  <li key={evidence}>
+              <p className="timeline-summary">{item.summary}</p>
+              <ul className="timeline-evidence">
+                {item.evidence.map((ev) => (
+                  <li key={ev}>
                     <CheckCircle size={15} weight="fill" />
-                    {evidence}
+                    {ev}
                   </li>
                 ))}
               </ul>
@@ -752,8 +1000,12 @@ function App() {
         </div>
       </section>
 
+      {/* ── Stack ── */}
       <section id="stack" className="section-band stack-band">
-        <SectionHeading eyebrow="Stack" title="A practical toolkit for turning ideas into useful, user-facing software." />
+        <SectionHeading
+          eyebrow="Stack"
+          title="A practical toolkit for turning ideas into useful, user-facing software."
+        />
         <div className="stack-matrix">
           {stackGroups.map(([group, skills]) => (
             <article className="stack-group reveal" key={group}>
@@ -768,6 +1020,7 @@ function App() {
         </div>
       </section>
 
+      {/* ── Contact ── */}
       <section id="contact" className="contact-band">
         <div className="contact-panel reveal">
           <div>
@@ -778,10 +1031,20 @@ function App() {
             <MagneticLink className="primary" href={`mailto:${profile.email}`}>
               Email Eduardo <PaperPlaneTilt size={18} weight="bold" />
             </MagneticLink>
-            <MagneticLink className="secondary" href={profile.linkedin} target="_blank" rel="noreferrer">
+            <MagneticLink
+              className="secondary"
+              href={profile.linkedin}
+              target="_blank"
+              rel="noreferrer"
+            >
               LinkedIn <LinkedinLogo size={18} weight="bold" />
             </MagneticLink>
-            <MagneticLink className="secondary" href={profile.github} target="_blank" rel="noreferrer">
+            <MagneticLink
+              className="secondary"
+              href={profile.github}
+              target="_blank"
+              rel="noreferrer"
+            >
               GitHub <GithubLogo size={18} weight="bold" />
             </MagneticLink>
           </div>

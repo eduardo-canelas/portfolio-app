@@ -1,9 +1,5 @@
 # Design
 
-## Theme
-
-Recruiter review at a desktop monitor during a short candidate-screening window: high contrast, quick to scan, visually memorable, and grounded in real project proof.
-
 ## Color
 
 Use tinted charcoal and graphite surfaces with one restrained chartreuse accent. Avoid pure black, pure white, purple-blue gradients, and neon glows.
